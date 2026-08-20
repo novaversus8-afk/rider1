@@ -1,0 +1,1961 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#111827">
+<title>Aalviro Rider Partner</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f4f6;color:#111827}
+button,input{font:inherit}
+button{cursor:pointer;border:0}
+.header{background:linear-gradient(135deg,#111827,#4338ca);color:white;padding:16px;position:sticky;top:0;z-index:50}
+.headerin{max-width:720px;margin:auto;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:22px;font-weight:900}
+.container{max-width:720px;margin:auto;padding:16px}
+.card{background:white;border-radius:22px;padding:18px;margin-bottom:15px;box-shadow:0 5px 18px #0001}
+.hero{background:linear-gradient(135deg,#111827,#4338ca);color:white}
+.hero h1{margin:0 0 8px}
+input{width:100%;padding:14px;border:1px solid #d1d5db;border-radius:13px;margin:7px 0 13px}
+.btn{width:100%;padding:14px;border-radius:13px;font-weight:800;margin:5px 0}
+.dark{background:#111827;color:white}
+.green{background:#16a34a;color:white}
+.red{background:#dc2626;color:white}
+.blue{background:#2563eb;color:white}
+.orange{background:#f59e0b;color:white}
+.gray{background:#e5e7eb;color:#111827}
+.hidden{display:none!important}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:white;border-radius:18px;padding:17px;text-align:center;box-shadow:0 3px 12px #0001}
+.stat b{display:block;font-size:28px;margin-top:7px}
+.order{border:1px solid #e5e7eb;border-radius:18px;padding:15px;margin:12px 0}
+.orderTop{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.badge{padding:7px 10px;border-radius:20px;background:#eef2ff;color:#3730a3;font-size:12px;font-weight:800}
+.money{font-size:22px;font-weight:900;color:#16a34a}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+.small{font-size:13px;color:#6b7280}
+.empty{text-align:center;padding:25px;color:#6b7280}
+.location{background:#eef4ff;border-radius:15px;padding:13px}
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px;background:linear-gradient(135deg,#111827,#4338ca)}
+.loginbox{background:white;width:100%;max-width:450px;padding:25px;border-radius:25px}
+.alert{padding:12px;border-radius:13px;background:#fee2e2;color:#991b1b;margin-top:10px}
+.modalbg{position:fixed;inset:0;background:#000b;display:none;align-items:flex-end;z-index:100}
+.modal{background:white;width:100%;max-width:720px;margin:auto;padding:22px;border-radius:25px 25px 0 0;max-height:90vh;overflow:auto}
+.bigAlarm{text-align:center;font-size:75px;animation:ring .5s infinite alternate}
+@keyframes ring{from{transform:scale(.9)}to{transform:scale(1.1)}}
+.close{float:right;width:42px;height:42px;border-radius:50%;background:#eee;font-size:24px}
+@media(max-width:600px){.actions{grid-template-columns:1fr}}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+
+<div id="loginPage" class="login">
+
+<div class="loginbox">
+
+<h1>🚚 Aalviro Rider</h1>
+
+<p class="small">
+Delivery Partner Login
+</p>
+
+<input
+id="email"
+type="email"
+placeholder="Rider Email">
+
+<input
+id="password"
+type="password"
+placeholder="Password">
+
+<button
+class="btn dark"
+onclick="login()">
+🔐 Login
+</button>
+
+<button
+class="btn gray"
+onclick="registerRider()">
+🆕 नया Rider Account
+</button>
+
+<div id="loginMsg"></div>
+
+</div>
+</div>
+
+
+<!-- APP -->
+
+<div id="app" class="hidden">
+
+<header class="header">
+
+<div class="headerin">
+
+<div class="logo">
+🚚 Aalviro Rider
+</div>
+
+<button
+class="btn gray"
+style="width:auto;margin:0"
+onclick="logout()">
+Logout
+</button>
+
+</div>
+</header>
+
+
+<div class="container">
+
+
+<div class="card hero">
+
+<h1>
+नमस्ते, <span id="riderName">Rider</span> 👋
+</h1>
+
+<p>
+Rider ID:
+<b id="riderId">---</b>
+</p>
+
+<button
+id="onlineBtn"
+class="btn green"
+onclick="toggleOnline()">
+🟢 ONLINE
+</button>
+
+</div>
+
+
+<!-- STATS -->
+
+<div class="stats">
+
+<div class="stat">
+आज की Deliveries
+<b id="todayDeliveries">0</b>
+</div>
+
+<div class="stat">
+आज की Earning
+<b id="todayEarning">₹0</b>
+</div>
+
+</div>
+
+
+<!-- GPS -->
+
+<div class="card">
+
+<h2>📍 Live Location</h2>
+
+<div
+id="gpsStatus"
+class="location">
+🔴 Live Location बंद है।
+</div>
+
+<button
+class="btn blue"
+onclick="startGPS()">
+📍 Start Live Location
+</button>
+
+<button
+class="btn red"
+onclick="stopGPS()">
+⛔ Stop Live Location
+</button>
+
+</div>
+
+
+<!-- ORDERS -->
+
+<div class="card">
+
+<h2>📦 My Orders</h2>
+
+<div id="orders">
+<div class="empty">
+Orders load हो रहे हैं...
+</div>
+</div>
+
+</div>
+
+
+<!-- HISTORY -->
+
+<div class="card">
+
+<h2>📜 Delivery History</h2>
+
+<div id="history">
+<div class="empty">
+History loading...
+</div>
+</div>
+
+</div>
+
+</div>
+</div>
+
+
+<!-- NEW ORDER ALARM -->
+
+<div id="alarmModal" class="modalbg">
+
+<div class="modal">
+
+<button
+class="close"
+onclick="closeAlarm()">
+×
+</button>
+
+<div class="bigAlarm">
+🚨
+</div>
+
+<h1 style="text-align:center;color:#dc2626">
+NEW ORDER
+</h1>
+
+<div id="alarmOrder"></div>
+
+<button
+class="btn green"
+onclick="acceptAlarmOrder()">
+✅ ORDER ACCEPT
+</button>
+
+<button
+class="btn red"
+onclick="closeAlarm()">
+🔇 ALARM बंद
+</button>
+
+</div>
+</div>
+
+
+<script type="module">
+
+import {
+initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+
+
+import {
+getAuth,
+onAuthStateChanged,
+signInWithEmailAndPassword,
+createUserWithEmailAndPassword,
+signOut
+}
+from
+"https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+
+
+import {
+getFirestore,
+collection,
+doc,
+getDoc,
+getDocs,
+setDoc,
+updateDoc,
+serverTimestamp
+}
+from
+"https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+
+
+/* ==================================================
+   AALVIRO FIREBASE
+================================================== */
+
+const firebaseConfig={
+
+apiKey:"AIzaSyDMmg81OOUPv0_-ZkZeNZazPodV7GDn7ew",
+
+authDomain:"aalviro-store-5bc7a.firebaseapp.com",
+
+projectId:"aalviro-store-5bc7a",
+
+storageBucket:"aalviro-store-5bc7a.firebasestorage.app",
+
+messagingSenderId:"739678310618",
+
+appId:"1:739678310618:web:edcc916e13324771d315e3"
+
+};
+
+
+const app=initializeApp(firebaseConfig);
+
+const auth=getAuth(app);
+
+const db=getFirestore(app);
+
+
+/* ==================================================
+   VARIABLES
+================================================== */
+
+let user=null;
+
+let rider=null;
+
+let orders=[];
+
+let gps=null;
+
+let online=false;
+
+let alarmOrder=null;
+
+let audioContext=null;
+
+let alarmTimer=null;
+
+let knownOrders=new Set();
+
+
+/* ==================================================
+   LOGIN
+================================================== */
+
+window.login=async()=>{
+
+const email=
+document.getElementById("email").value.trim();
+
+const password=
+document.getElementById("password").value;
+
+
+if(!email||!password){
+
+showLoginError(
+"Email और Password डालें।"
+);
+
+return;
+
+}
+
+
+try{
+
+await signInWithEmailAndPassword(
+auth,
+email,
+password
+);
+
+}catch(e){
+
+showLoginError(
+"Login failed: "+e.message
+);
+
+}
+
+};
+
+
+/* ==================================================
+   RIDER REGISTER
+================================================== */
+
+window.registerRider=async()=>{
+
+const email=
+prompt("Rider Email डालें:");
+
+if(!email)return;
+
+const password=
+prompt("Password डालें (कम से कम 6 characters):");
+
+if(!password)return;
+
+const name=
+prompt("Rider का नाम:");
+
+if(!name)return;
+
+const phone=
+prompt("Rider Mobile Number:");
+
+if(!phone)return;
+
+
+try{
+
+const result=
+await createUserWithEmailAndPassword(
+auth,
+email.trim(),
+password
+);
+
+
+const riderID=
+"AR"+Math.floor(
+100000+
+Math.random()*900000
+);
+
+
+await setDoc(
+doc(db,"users",result.user.uid),
+{
+
+uid:result.user.uid,
+
+role:"rider",
+
+name:name,
+
+phone:phone,
+
+email:email.trim(),
+
+riderId:riderID,
+
+online:false,
+
+createdAt:serverTimestamp()
+
+}
+);
+
+
+await setDoc(
+doc(db,"riders",result.user.uid),
+{
+
+uid:result.user.uid,
+
+name:name,
+
+phone:phone,
+
+email:email.trim(),
+
+riderId:riderID,
+
+online:false,
+
+createdAt:serverTimestamp()
+
+}
+);
+
+
+alert(
+"✅ Rider account बन गया!\n\nRider ID: "+
+riderID
+);
+
+
+}catch(e){
+
+alert(
+"Registration error:\n"+
+e.message
+);
+
+}
+
+};
+
+
+/* ==================================================
+   AUTH STATE
+================================================== */
+
+onAuthStateChanged(
+auth,
+async u=>{
+
+if(!u){
+
+document
+.getElementById("loginPage")
+.classList.remove("hidden");
+
+document
+.getElementById("app")
+.classList.add("hidden");
+
+return;
+
+}
+
+
+user=u;
+
+
+try{
+
+const snap=
+await getDoc(
+doc(db,"users",u.uid)
+);
+
+
+if(!snap.exists()){
+
+await signOut(auth);
+
+showLoginError(
+"Rider profile नहीं मिला।"
+);
+
+return;
+
+}
+
+
+const data=snap.data();
+
+
+if(data.role!=="rider"){
+
+await signOut(auth);
+
+showLoginError(
+"यह account Rider account नहीं है।"
+);
+
+return;
+
+}
+
+
+rider=data;
+
+online=!!data.online;
+
+
+document
+.getElementById("loginPage")
+.classList.add("hidden");
+
+document
+.getElementById("app")
+.classList.remove("hidden");
+
+
+document.getElementById("riderName")
+.textContent=
+data.name||"Rider";
+
+
+document.getElementById("riderId")
+.textContent=
+data.riderId||u.uid;
+
+
+updateOnlineButton();
+
+await loadOrders();
+
+}catch(e){
+
+showLoginError(e.message);
+
+}
+
+});
+
+
+/* ==================================================
+   LOAD ALL ORDERS
+   NO orderBy / NO composite index
+================================================== */
+
+async function loadOrders(){
+
+try{
+
+const snap=
+await getDocs(
+collection(db,"orders")
+);
+
+
+orders=[];
+
+
+snap.forEach(d=>{
+
+orders.push({
+
+id:d.id,
+
+...d.data()
+
+});
+
+});
+
+
+renderOrders();
+
+checkNewOrder();
+
+}catch(e){
+
+console.error(e);
+
+document.getElementById("orders")
+.innerHTML=
+`
+<div class="empty">
+❌ Orders load नहीं हुए।<br>
+${escapeHTML(e.message)}
+</div>
+`;
+
+}
+
+}
+
+
+/* ==================================================
+   RIDER MATCH
+================================================== */
+
+function myOrder(o){
+
+if(!user)return false;
+
+
+const uid=
+String(
+o.riderId||
+o.riderUid||
+o.assignedRiderUid||
+""
+);
+
+
+const rid=
+String(
+rider?.riderId||
+""
+);
+
+
+const email=
+String(
+rider?.email||
+user.email||
+""
+).toLowerCase();
+
+
+const assignedEmail=
+String(
+o.riderEmail||
+o.assignedRiderEmail||
+""
+).toLowerCase();
+
+
+return(
+
+uid===user.uid||
+
+uid===rid||
+
+assignedEmail===email
+
+);
+
+}
+
+
+/* ==================================================
+   STATUS
+================================================== */
+
+function status(o){
+
+return String(
+o.status||
+o.orderStatus||
+o.deliveryStatus||
+"New"
+).toLowerCase();
+
+}
+
+
+function delivered(o){
+
+const s=status(o);
+
+return(
+
+s==="delivered"||
+
+s==="complete"||
+
+s==="completed"||
+
+s==="delivery completed"
+
+);
+
+}
+
+
+/* ==================================================
+   DATE
+================================================== */
+
+function toDate(value){
+
+if(!value)return null;
+
+try{
+
+if(value.toDate)
+return value.toDate();
+
+if(value.seconds)
+return new Date(
+value.seconds*1000
+);
+
+return new Date(value);
+
+}catch(e){
+
+return null;
+
+}
+
+}
+
+
+function today(value){
+
+const d=toDate(value);
+
+if(!d)return false;
+
+const n=new Date();
+
+return(
+
+d.getDate()===n.getDate()&&
+
+d.getMonth()===n.getMonth()&&
+
+d.getFullYear()===n.getFullYear()
+
+);
+
+}
+
+
+/* ==================================================
+   EARNING
+================================================== */
+
+function earning(o){
+
+const values=[
+
+o.riderEarning,
+
+o.riderEarnings,
+
+o.deliveryEarning,
+
+o.deliveryFee,
+
+o.riderFee,
+
+o.riderPayment,
+
+o.deliveryCharge
+
+];
+
+
+for(const v of values){
+
+const n=Number(v);
+
+if(!isNaN(n)&&n>0)
+return n;
+
+}
+
+
+return 0;
+
+}
+
+
+/* ==================================================
+   RENDER
+================================================== */
+
+function renderOrders(){
+
+const mine=
+orders.filter(myOrder);
+
+
+const active=
+mine.filter(
+o=>!delivered(o)
+);
+
+
+const history=
+mine.filter(
+o=>delivered(o)
+);
+
+
+/* TODAY */
+
+const todayDone=
+history.filter(o=>
+
+today(
+o.deliveredAt||
+o.completedAt||
+o.updatedAt||
+o.createdAt
+)
+
+);
+
+
+let money=0;
+
+todayDone.forEach(o=>{
+
+money+=earning(o);
+
+});
+
+
+document.getElementById(
+"todayDeliveries"
+).textContent=
+todayDone.length;
+
+
+document.getElementById(
+"todayEarning"
+).textContent=
+"₹"+
+money.toLocaleString("en-IN");
+
+
+/* ACTIVE */
+
+if(!active.length){
+
+document.getElementById("orders")
+.innerHTML=
+`
+<div class="empty">
+📦 अभी कोई Active Order नहीं है।
+</div>
+`;
+
+}else{
+
+document.getElementById("orders")
+.innerHTML=
+active.map(orderHTML).join("");
+
+}
+
+
+/* HISTORY */
+
+if(!history.length){
+
+document.getElementById("history")
+.innerHTML=
+`
+<div class="empty">
+अभी कोई completed delivery नहीं है।
+</div>
+`;
+
+}else{
+
+history.sort(
+(a,b)=>{
+
+const da=
+toDate(
+a.deliveredAt||
+a.updatedAt||
+a.createdAt
+)?.getTime()||0;
+
+const db=
+toDate(
+b.deliveredAt||
+b.updatedAt||
+b.createdAt
+)?.getTime()||0;
+
+return db-da;
+
+}
+);
+
+
+document.getElementById("history")
+.innerHTML=
+history.map(
+historyHTML
+).join("");
+
+}
+
+}
+
+
+/* ==================================================
+   ACTIVE ORDER HTML
+================================================== */
+
+function orderHTML(o){
+
+const customer=
+o.customer?.name||
+o.customerName||
+"Customer";
+
+
+const phone=
+o.customer?.phone||
+o.customerPhone||
+o.phone||
+"";
+
+
+const address=
+o.customer?.address||
+o.deliveryAddress||
+o.address||
+"";
+
+
+const s=status(o);
+
+
+let buttons="";
+
+
+if(
+s==="new"||
+s==="assigned"
+){
+
+buttons+=`
+
+<button
+class="btn green"
+onclick="changeStatus('${o.id}','Accepted')">
+
+✅ Accept Order
+
+</button>
+
+`;
+
+}
+
+
+if(
+s==="accepted"||
+s==="accept"
+){
+
+buttons+=`
+
+<button
+class="btn orange"
+onclick="changeStatus('${o.id}','Pickup')">
+
+📦 Pickup
+
+</button>
+
+`;
+
+}
+
+
+if(
+s==="pickup"||
+s==="picked up"||
+s==="picked"
+
+){
+
+buttons+=`
+
+<button
+class="btn blue"
+onclick="changeStatus('${o.id}','On The Way')">
+
+🚚 On The Way
+
+</button>
+
+`;
+
+}
+
+
+if(
+s==="on the way"||
+s==="ontheway"||
+s==="out for delivery"
+){
+
+buttons+=`
+
+<button
+class="btn green"
+onclick="changeStatus('${o.id}','Delivered')">
+
+✅ Delivered
+
+</button>
+
+`;
+
+}
+
+
+/* यदि status कुछ अलग है तो भी Delivered button */
+
+if(
+s!=="delivered"&&
+!buttons.includes("Delivered")
+){
+
+buttons+=`
+
+<button
+class="btn green"
+onclick="changeStatus('${o.id}','Delivered')">
+
+✅ Delivered
+
+</button>
+
+`;
+
+}
+
+
+const map=
+"https://www.google.com/maps/dir/?api=1&destination="+
+encodeURIComponent(address);
+
+
+return`
+
+<div class="order">
+
+<div class="orderTop">
+
+<div>
+<b>📦 Order #${escapeHTML(
+o.id.substring(0,8)
+)}</b>
+</div>
+
+<div class="badge">
+${escapeHTML(o.status||"New")}
+</div>
+
+</div>
+
+
+<div style="margin-top:12px;line-height:1.7">
+
+👤 <b>${escapeHTML(customer)}</b>
+<br>
+
+📞 ${escapeHTML(phone)}
+<br>
+
+📍 ${escapeHTML(address)}
+<br>
+
+💰 Order Total:
+₹${Number(
+o.total||
+o.amount||
+o.totalAmount||
+0
+).toLocaleString("en-IN")}
+
+<br>
+
+🚚 Rider Earning:
+<b>₹${earning(o)}</b>
+
+</div>
+
+
+<div class="actions">
+
+<button
+class="btn"
+style="background:#111827;color:white"
+onclick="window.open('${map}','_blank')">
+
+🗺️ Google Maps
+
+</button>
+
+
+${
+phone
+?
+`
+<button
+class="btn blue"
+onclick="location.href='tel:${escapeHTML(phone)}'">
+
+📞 Call Customer
+
+</button>
+`
+:""
+}
+
+</div>
+
+
+${buttons}
+
+</div>
+
+`;
+
+}
+
+
+/* ==================================================
+   HISTORY HTML
+================================================== */
+
+function historyHTML(o){
+
+return`
+
+<div class="order">
+
+<div class="orderTop">
+
+<b>
+📦 #${escapeHTML(
+o.id.substring(0,8)
+)}
+</b>
+
+<span
+class="badge"
+style="background:#dcfce7;color:#166534">
+
+✅ Delivered
+
+</span>
+
+</div>
+
+
+<p>
+
+👤 ${
+escapeHTML(
+o.customer?.name||
+o.customerName||
+"Customer"
+)
+}
+
+<br>
+
+📍 ${
+escapeHTML(
+o.customer?.address||
+o.deliveryAddress||
+o.address||
+""
+)
+}
+
+</p>
+
+
+<div class="money">
+
+Rider Earning:
+₹${earning(o)}
+
+</div>
+
+</div>
+
+`;
+
+}
+
+
+/* ==================================================
+   CHANGE STATUS
+================================================== */
+
+window.changeStatus=
+async(id,newStatus)=>{
+
+try{
+
+const ref=
+doc(db,"orders",id);
+
+
+const data={
+
+status:newStatus,
+
+updatedAt:serverTimestamp(),
+
+riderId:user.uid,
+
+riderEmail:user.email
+
+};
+
+
+if(newStatus==="Delivered"){
+
+data.deliveredAt=
+serverTimestamp();
+
+/* Customer के लिए location बंद */
+
+data.riderLat=null;
+
+data.riderLng=null;
+
+data.riderLocationVisible=false;
+
+data.liveLocationEnabled=false;
+
+}
+
+
+await updateDoc(
+ref,
+data
+);
+
+
+if(newStatus==="Delivered"){
+
+stopGPS();
+
+}
+
+
+alert(
+newStatus==="Delivered"
+?
+"✅ Delivery Complete!"
+:
+"✅ Order status updated!"
+);
+
+
+await loadOrders();
+
+}catch(e){
+
+alert(
+"Status Error:\n"+
+e.message
+);
+
+}
+
+};
+
+
+/* ==================================================
+   ONLINE
+================================================== */
+
+window.toggleOnline=
+async()=>{
+
+online=!online;
+
+updateOnlineButton();
+
+
+try{
+
+await setDoc(
+doc(db,"users",user.uid),
+{
+
+online:online,
+
+updatedAt:serverTimestamp()
+
+},
+{merge:true}
+);
+
+
+if(online){
+
+startGPS();
+
+}else{
+
+stopGPS();
+
+}
+
+}catch(e){
+
+console.error(e);
+
+}
+
+};
+
+
+function updateOnlineButton(){
+
+const b=
+document.getElementById("onlineBtn");
+
+
+if(online){
+
+b.className="btn red";
+
+b.textContent=
+"🔴 OFFLINE — Orders रोकें";
+
+}else{
+
+b.className="btn green";
+
+b.textContent=
+"🟢 ONLINE — Orders ले सकते हैं";
+
+}
+
+}
+
+
+/* ==================================================
+   GPS
+================================================== */
+
+window.startGPS=()=>{
+
+if(!user)return;
+
+if(!navigator.geolocation){
+
+alert(
+"इस device में GPS उपलब्ध नहीं है।"
+);
+
+return;
+
+}
+
+if(gps!==null)return;
+
+
+gps=
+navigator.geolocation.watchPosition(
+
+async p=>{
+
+const lat=
+p.coords.latitude;
+
+const lng=
+p.coords.longitude;
+
+
+document.getElementById(
+"gpsStatus"
+).innerHTML=
+`
+🟢 Live Location ON<br>
+${lat.toFixed(5)},
+${lng.toFixed(5)}
+`;
+
+
+try{
+
+await setDoc(
+doc(
+db,
+"riderLocations",
+user.uid
+),
+{
+
+riderUid:user.uid,
+
+riderId:
+rider.riderId,
+
+latitude:lat,
+
+longitude:lng,
+
+active:true,
+
+updatedAt:
+serverTimestamp()
+
+},
+{merge:true}
+);
+
+
+/* Active orders में location */
+
+const mine=
+orders.filter(
+o=>
+myOrder(o)&&
+!delivered(o)
+);
+
+
+for(const o of mine){
+
+await updateDoc(
+doc(db,"orders",o.id),
+{
+
+riderLat:lat,
+
+riderLng:lng,
+
+riderLocationVisible:true,
+
+liveLocationEnabled:true,
+
+locationUpdatedAt:
+serverTimestamp()
+
+}
+);
+
+}
+
+}catch(e){
+
+console.log(
+"GPS Firebase:",
+e.message
+);
+
+}
+
+},
+
+error=>{
+
+document.getElementById(
+"gpsStatus"
+).innerHTML=
+"❌ GPS permission दें।";
+
+},
+
+{
+
+enableHighAccuracy:true,
+
+maximumAge:5000,
+
+timeout:15000
+
+}
+
+);
+
+};
+
+
+window.stopGPS=async()=>{
+
+if(gps!==null){
+
+navigator.geolocation.clearWatch(
+gps
+);
+
+gps=null;
+
+}
+
+
+document.getElementById(
+"gpsStatus"
+).innerHTML=
+"🔴 Live Location बंद है।";
+
+
+if(user){
+
+try{
+
+await setDoc(
+doc(
+db,
+"riderLocations",
+user.uid
+),
+{
+
+active:false,
+
+updatedAt:
+serverTimestamp()
+
+},
+{merge:true}
+);
+
+}catch(e){}
+
+}
+
+};
+
+
+/* ==================================================
+   NEW ORDER CHECK
+================================================== */
+
+function checkNewOrder(){
+
+if(!online)return;
+
+
+const mine=
+orders.filter(
+o=>
+myOrder(o)&&
+(
+status(o)==="new"||
+status(o)==="assigned"
+)
+);
+
+
+for(const o of mine){
+
+if(!knownOrders.has(o.id)){
+
+knownOrders.add(o.id);
+
+localStorage.setItem(
+"riderKnownOrders",
+JSON.stringify(
+Array.from(knownOrders)
+)
+);
+
+
+alarmOrder=o;
+
+showAlarm(o);
+
+break;
+
+}
+
+}
+
+}
+
+
+/* ==================================================
+   ALARM
+================================================== */
+
+function showAlarm(o){
+
+const name=
+o.customer?.name||
+o.customerName||
+"Customer";
+
+
+const address=
+o.customer?.address||
+o.address||
+o.deliveryAddress||
+"";
+
+
+document.getElementById(
+"alarmOrder"
+).innerHTML=
+`
+
+<div class="card">
+
+<h3>
+📦 Order #${escapeHTML(
+o.id.substring(0,8)
+)}
+</h3>
+
+<p>
+👤 ${escapeHTML(name)}
+</p>
+
+<p>
+📍 ${escapeHTML(address)}
+</p>
+
+<h2 style="color:#16a34a">
+₹${Number(
+o.total||
+o.amount||
+0
+).toLocaleString("en-IN")}
+</h2>
+
+</div>
+
+`;
+
+
+document.getElementById(
+"alarmModal"
+).style.display="flex";
+
+
+startAlarm();
+
+}
+
+
+/* ==================================================
+   ACCEPT ALARM ORDER
+================================================== */
+
+window.acceptAlarmOrder=
+async()=>{
+
+if(!alarmOrder)return;
+
+
+await changeStatus(
+alarmOrder.id,
+"Accepted"
+);
+
+
+closeAlarm();
+
+};
+
+
+/* ==================================================
+   CLOSE ALARM
+================================================== */
+
+window.closeAlarm=()=>{
+
+document.getElementById(
+"alarmModal"
+).style.display="none";
+
+
+stopAlarm();
+
+alarmOrder=null;
+
+};
+
+
+/* ==================================================
+   SOUND
+================================================== */
+
+function startAlarm(){
+
+stopAlarm();
+
+
+try{
+
+const AudioContext=
+window.AudioContext||
+window.webkitAudioContext;
+
+
+audioContext=
+new AudioContext();
+
+
+function beep(){
+
+if(!audioContext)return;
+
+
+const oscillator=
+audioContext.createOscillator();
+
+const gain=
+audioContext.createGain();
+
+
+oscillator.type="square";
+
+oscillator.frequency.value=950;
+
+gain.gain.value=.09;
+
+
+oscillator.connect(gain);
+
+gain.connect(
+audioContext.destination
+);
+
+
+oscillator.start();
+
+
+setTimeout(()=>{
+
+if(
+oscillator
+){
+
+oscillator.frequency.value=650;
+
+}
+
+},250);
+
+
+setTimeout(()=>{
+
+try{
+
+oscillator.stop();
+
+}catch(e){}
+
+},500);
+
+}
+
+
+beep();
+
+
+alarmTimer=
+setInterval(
+beep,
+800
+);
+
+
+}catch(e){
+
+console.log(
+"Alarm error:",
+e
+);
+
+}
+
+}
+
+
+/* ==================================================
+   STOP SOUND
+================================================== */
+
+function stopAlarm(){
+
+if(alarmTimer){
+
+clearInterval(
+alarmTimer
+);
+
+alarmTimer=null;
+
+}
+
+
+if(audioContext){
+
+try{
+
+audioContext.close();
+
+}catch(e){}
+
+audioContext=null;
+
+}
+
+}
+
+
+/* ==================================================
+   LOGIN ERROR
+================================================== */
+
+function showLoginError(text){
+
+document.getElementById(
+"loginMsg"
+).innerHTML=
+`
+<div class="alert">
+${escapeHTML(text)}
+</div>
+`;
+
+}
+
+
+/* ==================================================
+   LOGOUT
+================================================== */
+
+window.logout=
+async()=>{
+
+try{
+
+stopGPS();
+
+stopAlarm();
+
+await signOut(auth);
+
+}catch(e){
+
+console.log(e);
+
+}
+
+};
+
+
+/* ==================================================
+   ESCAPE
+================================================== */
+
+function escapeHTML(v){
+
+return String(v??"")
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;")
+.replaceAll("'","&#039;");
+
+}
+
+
+/* ==================================================
+   REFRESH
+================================================== */
+
+setInterval(
+async()=>{
+
+if(user){
+
+await loadOrders();
+
+}
+
+},
+30000
+);
+
+
+/* ==================================================
+   RESTORE KNOWN ORDERS
+================================================== */
+
+try{
+
+const old=
+JSON.parse(
+localStorage.getItem(
+"riderKnownOrders"
+)||"[]"
+);
+
+
+old.forEach(
+x=>knownOrders.add(x)
+);
+
+}catch(e){}
+
+</script>
+
+</body>
+</html>
